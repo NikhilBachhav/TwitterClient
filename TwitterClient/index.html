@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html ng-app="twitterApp">
+<head>
+    <title>Tweet Client</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="app/components/oauth.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-sanitize.js"></script>
+    <script src="app/components/app.js"></script>
+    <script src="app/controller/controllers.js"></script>
+    <script src="app/services/services.js"></script>
+    <style>
+        .container {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        #results .row {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" ng-controller="TwitterController">
+        <h1>Twitter client</h1>
+        <button ng-click="signOut()" id="signOut" type="button" class="btn btn-link" style="display:none;float: right">Sign Out</button>
+        <div class="row">
+            <div class="col-xs-6">
+                <button ng-click="connectButton()" id="connectButton" type="button" class="btn btn-primary">Connect Twitter</button>
+                <button ng-click="refreshTimeline()" id="getTimelineButton" type="button" class="btn btn-info" style="display:none;">Refresh Tweets</button>
+			</div>
+
+
+        </div>
+        <div class="item item-input-inset" id="addTweet" style="display:none;">
+            <label class="item-input-wrapper">
+                <input type="text" placeholder="Add your tweet" class="form-control" ng-model="tweet.message" ng-maxlength="140" style="margin-top: 17px; height: 35px; padding-left: 12px;">
+            </label>
+            <button class="btn btn-primary" ng-click="submitTweet()" style="padding-bottom: 9px; margin-bottom: 32px;" >
+                Tweet
+            </button>
+            <div class="col-xs-3" style="float: right; margin-top: 8px; margin-left: 0px; left: -467px; top: 12px;">
+                <input type="text" ng-model="searchTerm" class="form-control" id="searchBox" placeholder="Search tweet here" ng-show="connectedTwitter"/>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-xs-12" id="results">
+                <div class="row" ng-repeat="t in tweets | filter:searchTerm">
+
+                    <div class="col-xs-2 col-sm-1">
+                        <img ng-src="{{t.user.profile_image_url}}" class="img-circle">
+                    </div>
+                    <div class="col-xs-10 col-sm-11">
+                        <small>{{t.user.name}}</small><br> <span ng-bind-html="t.text"></span>
+                    </div>
+
+                </div>
+
+                <div ng-show="rateLimitError">
+                  Rate limit reached. You are making too many requests.
+                </div>
+				<div>
+					<br/>
+					<input type="button" class="btn btn-info" id="load-more" ng-click="refreshTimeline(tweets[tweets.length-1].id)" ng-show="connectedTwitter" value="Load More"/>
+				</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
